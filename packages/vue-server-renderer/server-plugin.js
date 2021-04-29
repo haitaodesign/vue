@@ -17,7 +17,8 @@ var validate = function (compiler) {
     warn('webpack config `target` should be "node".');
   }
 
-  if (compiler.options.output && compiler.options.output.libraryTarget !== 'commonjs2') {
+  // if (compiler.options.output && compiler.options.output.libraryTarget !== 'commonjs2') {
+  if (compiler.options.output && compiler.options.output.library.type !== 'commonjs2') {
     warn('webpack config `output.libraryTarget` should be "commonjs2".');
   }
 
@@ -62,7 +63,9 @@ VueSSRServerPlugin.prototype.apply = function apply (compiler) {
       return cb()
     }
 
-    var entryAssets = entryInfo.assets.filter(isJS);
+    // var entryAssets = entryInfo.assets.filter(isJS);
+    var entryAssets = entryInfo.assets.filter(file => isJS(file.name));
+
 
     if (entryAssets.length > 1) {
       throw new Error(
@@ -72,14 +75,16 @@ VueSSRServerPlugin.prototype.apply = function apply (compiler) {
     }
 
     var entry = entryAssets[0];
-    if (!entry || typeof entry !== 'string') {
+    // if (!entry || typeof entry !== 'string') {
+    if (!entry || typeof entry.name !== 'string') {
       throw new Error(
         ("Entry \"" + entryName + "\" not found. Did you specify the correct entry option?")
       )
     }
 
     var bundle = {
-      entry: entry,
+      // entry: entry,
+      entry: entry.name,
       files: {},
       maps: {}
     };
